@@ -1,0 +1,11 @@
+
+  {{object.id}}&nbsp
+  {{object.task_name}}&nbsp
+  {% if object.is_marked_completed_task %}
+    Task Completed
+  {%else%}
+    Pending
+    <!-- {{task.is_marked_completed_task }} -->
+  {%endif%}<br>
+  <a href="{% url 'tasks:task_list'%}">Back</a>
+  

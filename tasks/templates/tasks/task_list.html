@@ -1,0 +1,97 @@
+
+{% if object_list %}
+<div class="search">
+  <form action="#">
+      <input type="text"
+          placeholder=" Search Tasks"
+          name="q">
+      <button type="submit">
+         Submit
+      </button>
+  </form>
+</div>
+
+<form>
+<tr><b>Id</b></tr>
+<tr><button type="submit" name="task_name" value="task_name" style="background-color:white">Task Name</button></tr>
+<tr><b><button type="submit" name="start_date" value="start_date">Start Date</button></b></tr>
+<tr><b><button type="submit" name="end_date" value="end_date">End Date</button></b></tr>
+<tr><b>Status</b></tr></form>
+<br>
+{% endif %}
+
+{%for task in object_list%}
+  <a href="{% url 'tasks:task_detail' task.id%}">{{task.id}}</a>&nbsp
+  {{task.task_name}},&nbsp
+  {{task.start_date|date:'d-m-y'}},&nbsp
+  {{task.end_date|date:'d-m-y'}},&nbsp
+  {% if task.is_marked_completed_task %}
+    <!-- <b>Completed</b>&nbsp&nbsp -->
+    <a href="#" class="mark_pending" data-id="{{task.id}}" style="color:red">Completed</a>&nbsp
+    
+    
+  {%else%}
+    <!-- <span class="mark_done" id="{{task.id}}" style="color:red">Pending</span>&nbsp -->
+    <a href="#" class="mark_done" data-id="{{task.id}}" style="color:red">Pending</a>&nbsp
+    
+    <!-- {{task.is_marked_completed_task }} -->
+  {%endif%}
+  <a href="{% url 'tasks:editTask' task.id%}">Edit</a>&nbsp
+  <a href="{% url 'tasks:deleteTask' task.id%}">Delete</a>&nbsp<br>
+
+{%endfor%}
+<a href="{% url 'tasks:task_create'%}">Add New Task</a>&nbsp
+{% if request.user.is_authenticated %}
+  <a href="{%url 'tasks:logout' %}">logout</a>
+{%else%}
+    <a href="{%url 'tasks:login' %}">login</a>
+{%endif%}
+<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script>
+  $(document).ready(function() {
+      function markCompleted(taskId){
+        $.ajax({
+          type: "GET",
+          url: `http://localhost:7000/mark_task_complete/${taskId}`,
+          
+          success: function (result) {
+            alert("Mark Done")
+            location.reload()
+          },
+          error: function(error){
+            alert("error")
+          }
+        
+        });
+      }
+      function markPending(taskId){
+        $.ajax({
+          type: "GET",
+          url: `http://localhost:7000/mark_task_pending/${taskId}`,
+          
+          success: function (result) {
+            alert("Mark Pending")
+            location.reload()
+          },
+          error: function(error){
+            alert("error")
+          }
+        
+        });
+      }
+      $('.mark_done').click(function(){
+        var taskId = $(this).data('id')
+          // console.log(id)
+          // var taskId = $('.mark_done').id
+        console.log(taskId)
+        markCompleted(taskId);
+      });
+      
+      $('.mark_pending').click(function(){
+        var taskId = $(this).data('id')
+        console.log(taskId)
+        markPending(taskId);
+
+      });
+    });
+  </script>
